@@ -1,22 +1,21 @@
-_mvn() 
+_mvn()
 {
     local cur prev opts
     COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    _get_comp_words_by_ref -n =: cur prev
 
     opts="-am|-amd|-B|-C|-c|-cpu|-D|-e|-emp|-ep|-f|-fae|-ff|-fn|-gs|-h|-l|-N|-npr|-npu|-nsu|-o|-P|-pl|-q|-rf|-s|-T|-t|-U|-up|-V|-v|-X"
     long_opts="--also-make|--also-make-dependents|--batch-mode|--strict-checksums|--lax-checksums|--check-plugin-updates|--define|--errors|--encrypt-master-password|--encrypt-password|--file|--fail-at-end|--fail-fast|--fail-never|--global-settings|--help|--log-file|--non-recursive|--no-plugin-registry|--no-plugin-updates|--no-snapshot-updates|--offline|--activate-profiles|--projects|--quiet|--resume-from|--settings|--threads|--toolchains|--update-snapshots|--update-plugins|--show-version|--version|--debug"
 
     common_lifecycle_phases="clean|process-resources|compile|process-test-resources|test-compile|test|package|verify|install|deploy|site"
     common_plugins="deploy|failsafe|install|site|surefire|checkstyle|javadoc|jxr|pmd|ant|antrun|archetype|assembly|dependency|enforcer|gpg|help|release|repository|source|eclipse|idea|jetty|cargo|jboss|tomcat|tomcat6|tomcat7|exec|versions|war|ear|ejb|android|scm|buildnumber|nexus|repository|sonar|license|hibernate3|liquibase|flyway|gwt"
-    
+
     plugin_goals_deploy="deploy:deploy-file"
     plugin_goals_failsafe="failsafe:integration-test|failsafe:verify"
     plugin_goals_install="install:install-file"
     plugin_goals_site="site:site|site:deploy|site:run|site:stage|site:stage-deploy"
     plugin_goals_surefire="surefire:test"
-    
+
     plugin_goals_checkstyle="checkstyle:checkstyle|checkstyle:check"
     plugin_goals_javadoc="javadoc:javadoc|javadoc:jar|javadoc:aggregate"
     plugin_goals_jxr="jxr:jxr"
@@ -33,10 +32,10 @@ _mvn()
     plugin_goals_release="release:clean|release:prepare|release:rollback|release:perform|release:stage|release:branch|release:update-versions"
     plugin_goals_repository="repository:bundle-create|repository:bundle-pack"
     plugin_goals_source="source:aggregate|source:jar|source:jar-no-fork"
-    
+
     plugin_goals_eclipse="eclipse:clean|eclipse:eclipse"
     plugin_goals_idea="idea:clean|idea:idea"
-    
+
     plugin_goals_jetty="jetty:run|jetty:run-exploded"
     plugin_goals_cargo="cargo:start|cargo:run|cargo:stop|cargo:deploy|cargo:undeploy|cargo:help"
     plugin_goals_jboss="jboss:start|jboss:stop|jboss:deploy|jboss:undeploy|jboss:redeploy"
@@ -96,6 +95,7 @@ _mvn()
           if [[ ${cur} == ${plugin}:* ]]; then
             var_name="plugin_goals_${plugin}"
             COMPREPLY=( $(compgen -W "${!var_name}" -S ' ' -- ${cur}) )
+            break
           fi
         done
 
@@ -106,9 +106,9 @@ _mvn()
           COMPREPLY=( $(compgen -S ':' -W "${common_plugins}" -- ${cur}) )
         fi
     fi
+
+    __ltrim_colon_completions "$cur"
 }
 
 complete -o default -F _mvn -o nospace mvn
 complete -o default -F _mvn -o nospace mvnDebug
-
-COMP_WORDBREAKS=${COMP_WORDBREAKS//:}
